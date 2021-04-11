@@ -11,6 +11,9 @@
   ],
   "main": "dist/app.js",
   "types": "dist/app.d.ts",
+  "bin": {
+    "smarthome4loxone": "dist/app.js"
+  },
   "scripts": {
     "start": "node dist/app.js",
     "build": "tsc",
