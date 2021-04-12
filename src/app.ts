@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { Config, InfluxDbClient, MqttBrokerClient } from '../../smarthomelib/dist/app';
+import { Config, InfluxDbClient, MqttBrokerClient } from 'smarthomelib';
 import { LoxoneMiniserverClient, LoxoneMiniserverOption, LoxoneMiniserverServer } from './modules/LoxoneMiniserver';
 
 const pkg = Config.loadJsonFile(`${__dirname}/../package.json`);
