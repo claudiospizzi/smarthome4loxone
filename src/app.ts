@@ -41,10 +41,12 @@ const influxDbClient = new InfluxDbClient(config.influx);
 
 const loxoneMiniserverServer = new LoxoneMiniserverServer(config.app);
 loxoneMiniserverServer.onStatusMessageEvent.subscribe((_, statusMessage) => {
+  mqttBrokerClient.publishConnected('2');
   mqttBrokerClient.publishStatus(statusMessage);
   influxDbClient.write(statusMessage);
 });
 loxoneMiniserverServer.onActionMessageEvent.subscribe((_, actionMessage) => {
+  mqttBrokerClient.publishConnected('2');
   mqttBrokerClient.publishAction(actionMessage);
 });
 
