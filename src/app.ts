@@ -11,9 +11,11 @@ const cfg = Config.loadJsonFile(process.argv[2] || `${__dirname}/../config.json`
  */
 
 const config = new Config<LoxoneMiniserverOption>(pkg, {
+  logLevel: cfg.logLevel,
   mqtt: cfg.mqtt,
   influx: cfg.influx,
   app: {
+    logLevel: cfg.logLevel,
     host: Config.useValueOrThrow<string>('loxone.host', cfg.loxone.host),
     port: Config.useValueOrThrow<number>('loxone.port', cfg.loxone.port),
   },
@@ -24,6 +26,9 @@ const config = new Config<LoxoneMiniserverOption>(pkg, {
  */
 
 const mqttBrokerClient = new MqttBrokerClient(config.mqtt);
+mqttBrokerClient.setDeviceConnectedCallback(() => {
+  return loxoneMiniserverClient.isActive && loxoneMiniserverServer.isActive;
+});
 mqttBrokerClient.onActionMessageEvent.subscribe((_, actionMessage) => {
   loxoneMiniserverClient.sendAction(actionMessage);
 });
@@ -41,12 +46,10 @@ const influxDbClient = new InfluxDbClient(config.influx);
 
 const loxoneMiniserverServer = new LoxoneMiniserverServer(config.app);
 loxoneMiniserverServer.onStatusMessageEvent.subscribe((_, statusMessage) => {
-  mqttBrokerClient.publishConnected('2');
   mqttBrokerClient.publishStatus(statusMessage);
   influxDbClient.write(statusMessage);
 });
 loxoneMiniserverServer.onActionMessageEvent.subscribe((_, actionMessage) => {
-  mqttBrokerClient.publishConnected('2');
   mqttBrokerClient.publishAction(actionMessage);
 });
 

@@ -1,11 +1,12 @@
 import { createSocket as dgramCreateSocket, Socket } from 'dgram';
 import { ActionMessage, SmartHomeClientBase, SmartHomeServerBase, StatusMessage } from 'smarthomelib';
 import { EventDispatcher, IEvent } from 'strongly-typed-events';
+import { LogLevelOption } from 'smarthomelib';
 
 /**
  * Constructor options for the Loxone Miniserver client and server.
  */
-export interface LoxoneMiniserverOption {
+export interface LoxoneMiniserverOption extends LogLevelOption {
   host: string;
   port: number;
 }
@@ -30,6 +31,7 @@ export class LoxoneMiniserverServer extends SmartHomeServerBase {
       name: `LoxoneMiniserverServer(${option.host})`,
       localEndpoint: `udp://0.0.0.0:${option.port}`,
       outdatedSec: 65,
+      logLevel: option.logLevel,
     });
 
     this.port = option.port;
@@ -89,7 +91,7 @@ export class LoxoneMiniserverServer extends SmartHomeServerBase {
       this.server.bind(this.port);
       this.onInitialize();
     } else {
-      this.logger.warn('Already initialized.');
+      this.logger.warn('Initialization failed, already initialized.');
     }
   }
 
@@ -143,6 +145,7 @@ export class LoxoneMiniserverClient extends SmartHomeClientBase {
       name: `LoxoneMiniserverClient(${option.host})`,
       remoteEndpoint: `udp://${option.host}:${option.port}`,
       outdatedSec: 0,
+      logLevel: option.logLevel,
     });
 
     this.host = option.host;
@@ -158,7 +161,7 @@ export class LoxoneMiniserverClient extends SmartHomeClientBase {
       this.client = dgramCreateSocket('udp4');
       this.onInitialize();
     } else {
-      this.logger.warn('Already initialized.');
+      this.logger.warn('Initialization failed, already initialized.');
     }
   }
 
